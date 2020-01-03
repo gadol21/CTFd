@@ -1,5 +1,5 @@
 #!/bin/sh
-set -eo pipefail
+#set -eo pipefail
 
 WORKERS=${WORKERS:-1}
 WORKER_CLASS=${WORKER_CLASS:-geventwebsocket.gunicorn.workers.GeventWebSocketWorker}
@@ -35,6 +35,17 @@ fi
 
 # Initialize database
 python manage.py db upgrade
+
+# Start the docker daemon
+dockerd &
+echo 'Waiting for dockerd to initialize'
+sleep 5
+for f in /.container_images/required_by_challenges/*
+do
+    echo "loading $f into docker"
+    docker load -i "$f"
+done
+
 
 # Start CTFd
 echo "Starting CTFd"

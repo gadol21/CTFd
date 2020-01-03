@@ -1,4 +1,4 @@
-FROM python:2.7-alpine
+FROM docker:dind
 RUN apk update && \
     apk add python python-dev linux-headers libffi-dev gcc make musl-dev py-pip mysql-client git openssl-dev
 
@@ -7,9 +7,9 @@ RUN mkdir -p /opt/CTFd
 
 COPY requirements.txt .
 
-RUN pip install -r requirements.txt
-
 COPY . /opt/CTFd
+
+RUN pip install -r requirements.txt --no-index --find-links file:///opt/CTFd/required_packages
 
 VOLUME ["/opt/CTFd"]
 
